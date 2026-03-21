@@ -8,13 +8,24 @@ branding:
 inputs:
   url:
     required: true
-    description: 'Url of NuGet package source to add'
+    description: 'URL of NuGet package source to add'
+  name:
+    required: false
+    description: 'Name for the NuGet package source. If not specified, a random GUID will be used'
   username:
     required: false
     description: 'Username for private NuGet package source access'
   password:
     required: false
     description: 'Password for private NuGet package source access'
+  force:
+    required: false
+    default: 'false'
+    description: 'If true, existing entry with the same URL will be overwritten'
+
+outputs:
+  source_name:
+    description: 'The name of the added package source'
 
 runs:
   using: 'node20'

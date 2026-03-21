@@ -12,16 +12,31 @@ async function run(): Promise<void> {
 
     const username: string = core.getInput('username');
     const pwd: string = core.getInput('password');
+    const force: boolean = core.getInput('force').toLowerCase() === 'true';
+    core.info(`Input force: ${force}`);
+
+    const inputName = core.getInput('name');
+    core.info(`Input name: ${inputName}`);
 
     const packageSourceList = getPackageSourceList();
 
-    const sourceAdded = packageSourceList.some(element => element.url === url);
-    if (sourceAdded) {
-      core.info(`Source ${url} already exists`);
-      return;
+    const existingSource = packageSourceList.find(
+      element => element.url === url
+    );
+    if (existingSource) {
+      if (!force) {
+        core.info(`Source ${url} already exists`);
+        return;
+      }
+
+      core.info(`Source ${url} already exists, removing it (force=true)`);
+      const removeCommand = `dotnet nuget remove source "${existingSource.name}"`;
+      core.info(`Removing source: ${removeCommand}`);
+      execSync(removeCommand, { stdio: 'inherit' });
     }
 
-    const packageSourceName = uuidv4();
+    const packageSourceName = inputName || uuidv4();
+    core.setOutput('source_name', packageSourceName);
     if (username) {
       // private package source
 
